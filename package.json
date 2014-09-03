@@ -9,16 +9,16 @@
     "campfire",
     "bot"
   ],
-  "description": "A simple helpful robot for your Company",
+  "description": "personal hubot for fun",
   "licenses": [
     {
       "type": "MIT",
-      "url": "https://github.com/github/hubot/raw/master/LICENSE"
+      "url": "https://github.com/amwmedia/halbot/raw/master/LICENSE"
     }
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/github/hubot.git"
+    "url": "https://github.com/amwmedia/halbot.git"
   },
   "dependencies": {
     "hubot": ">= 2.6.0 < 3.0.0",
