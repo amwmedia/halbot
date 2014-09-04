@@ -1,1 +1,18 @@
-["redis-brain.coffee", "shipit.coffee"]
+[
+	"redis-brain.coffee",
+	"shipit.coffee",
+	"zen.coffee",
+	"ackbar.coffee",
+	"ambush.coffee",
+	"ascii.coffee",
+	"carlton.coffee",
+	"chat.coffee",
+	"chuck-norris.coffee",
+	"coin.coffee",
+	"cowsay.coffee",
+	"dealwithit.coffee",
+	"facepalm.coffee",
+	"xkcd.coffee",
+	"working-on.coffee",
+	"wolfram.coffee"
+]
