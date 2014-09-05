@@ -1,5 +1,4 @@
 [
-	"mongo-brain.coffee",
 	"shipit.coffee",
 	"zen.coffee",
 	"ackbar.coffee",
