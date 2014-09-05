@@ -17,7 +17,7 @@
 #   None
 #
 # Author:
-#   ajacksified, maxbeatty
+#   ajacksified, maxbeatty 
 
 Util = require "util"
 mongodb = require "mongodb"
