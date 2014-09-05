@@ -3,7 +3,6 @@
 	"shipit.coffee",
 	"zen.coffee",
 	"ackbar.coffee",
-	"ambush.coffee",
 	"carlton.coffee",
 	"chat.coffee",
 	"chuck-norris.coffee",
@@ -11,5 +10,6 @@
 	"dealwithit.coffee",
 	"facepalm.coffee",
 	"xkcd.coffee",
-	"working-on.coffee"
+	"working-on.coffee",
+	"zombies.coffee"
 ]
