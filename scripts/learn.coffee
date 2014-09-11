@@ -144,5 +144,8 @@ module.exports = (robot) ->
     else
       key = msg.random Object.keys memory.words
       lookup = msg.random memory.words[key]
+      
+      memory.lastRecall = lookup
+      robot.brain.set('learned', memory)
 
       msg.send [lookup.word, lookup.action, lookup.term].join(' ')
