@@ -33,6 +33,14 @@ module.exports = (robot) ->
     'Does not compute.'
   ]
 
+  affirmativeResponses = [
+    'Ok.',
+    'Got it.',
+    'Alrighty.',
+    'Sweet.',
+    'Roger that.'
+  ]
+
   memory = {}
 
   loadMemory = () ->
@@ -46,7 +54,64 @@ module.exports = (robot) ->
   getAmbiguousUserText = (users) ->
     "Be more specific, I know #{users.length} people named like that: #{(user.name for user in users).join(", ")}"
 
-  robot.respond /(who|what) (is|are) @?(\w+)\??$/i, (msg) ->
+
+# --------------------- #
+# ====== SETTING ====== #
+# --------------------- #
+
+  robot.respond /@?(\w+) (is|are) (.*)/i, (msg) ->
+    loadMemory()
+    word = msg.match[1].trim()
+    key = inflection.singularize(word)
+    action = msg.match[2].trim()
+    term = msg.match[3].trim()
+
+    unless word in ['', 'who', 'what', 'where', 'when', 'why']
+      unless term.match(/^not\s+/i)
+        memory.words[key] ?= []
+        wordData = memory.words[key]
+        recall = (m for m in wordData when m.term is term)
+
+        if recall.length
+          msg.send msg.random(alreadyKnowResponses) + ' ' + recall[0].user + ' told me.'
+        else
+          wordData.push {
+            word: word,
+            action: action,
+            term: term,
+            user: msg.message.user.name.toLowerCase()
+          }
+          robot.brain.set('learned', memory)
+          msg.send (msg.random affirmativeResponses) + ' ' + [word, action, term].join(' ')
+
+  robot.respond /@?(\w+) (is|are) not (.*)/i, (msg) ->
+    loadMemory()
+    word = msg.match[1].trim()
+    key = inflection.singularize(word)
+    action = msg.match[2].trim()
+    term = msg.match[3].trim()
+
+    unless word in ['', 'who', 'what', 'where', 'when', 'why']
+      unless term.match(/^not\s+/i)
+        memory.words[key] ?= []
+        wordData = memory.words[key]
+        recall = (m for m in wordData when m.term is term)
+
+        if not recall.length
+          msg.send msg.random alreadyKnowResponses
+        else
+          memory.words[key] = (m for m in wordData when m.term is not term)
+          if not memory.words[key].length
+            delete memory.words[key]
+          robot.brain.set('learned', memory)
+          msg.send (msg.random affirmativeResponses) + ' ' + [word, action, 'not', term].join(' ')
+
+
+# --------------------- #
+# ====== GETTING ====== #
+# --------------------- #
+
+  robot.respond /(who|what) (is|are|do you think about) @?(\w+)\??$/i, (msg) ->
     loadMemory()
     action = msg.match[2].trim()
     word = msg.match[3].trim()
@@ -91,53 +156,6 @@ module.exports = (robot) ->
         msg.send 'you did'
       else
         msg.send lookup.user
-
-  robot.respond /@?(\w+) (is|are) (.*)/i, (msg) ->
-    loadMemory()
-    word = msg.match[1].trim()
-    key = inflection.singularize(word)
-    action = msg.match[2].trim()
-    term = msg.match[3].trim()
-
-    unless word in ['', 'who', 'what', 'where', 'when', 'why']
-      unless term.match(/^not\s+/i)
-        memory.words[key] ?= []
-        wordData = memory.words[key]
-        recall = (m for m in wordData when m.term is term)
-
-        if recall.length
-          msg.send msg.random(alreadyKnowResponses) + ' ' + recall[0].user + ' told me.'
-        else
-          wordData.push {
-            word: word,
-            action: action,
-            term: term,
-            user: msg.message.user.name.toLowerCase()
-          }
-          robot.brain.set('learned', memory)
-          msg.send 'thanks for teaching me about ' + word
-
-  robot.respond /@?(\w+) (is|are) not (.*)/i, (msg) ->
-    loadMemory()
-    word = msg.match[1].trim()
-    key = inflection.singularize(word)
-    action = msg.match[2].trim()
-    term = msg.match[3].trim()
-
-    unless word in ['', 'who', 'what', 'where', 'when', 'why']
-      unless term.match(/^not\s+/i)
-        memory.words[key] ?= []
-        wordData = memory.words[key]
-        recall = (m for m in wordData when m.term is term)
-
-        if not recall.length
-          msg.send msg.random alreadyKnowResponses
-        else
-          memory.words[key] = (m for m in wordData when m.term is not term)
-          if not memory.words[key].length
-            delete memory.words[key]
-          robot.brain.set('learned', memory)
-          msg.send 'Ok, ' + [word, action, 'not', term].join(' ')
 
   robot.respond /what( words)? do you know\??/i, (msg) ->
     loadMemory()
