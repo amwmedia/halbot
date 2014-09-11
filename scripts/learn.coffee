@@ -33,8 +33,11 @@ module.exports = (robot) ->
     'Does not compute.'
   ]
 
-  memory = robot.brain.get('learned') || {}
-  memory.words ?= {}
+  memory = {}
+
+  loadMemory = () ->
+    memory = robot.brain.get('learned') || {}
+    memory.words ?= {}
 
   if process.env.HUBOT_AUTH_ADMIN?
     robot.logger.warning 'The HUBOT_AUTH_ADMIN environment variable is set not going to load roles.coffee, you should delete it'
@@ -44,6 +47,7 @@ module.exports = (robot) ->
     "Be more specific, I know #{users.length} people named like that: #{(user.name for user in users).join(", ")}"
 
   robot.respond /(who|what) (is|are) @?(\w+)\??$/i, (msg) ->
+    loadMemory()
     action = msg.match[2].trim()
     word = msg.match[3].trim()
     key = inflection.singularize(word)
@@ -58,6 +62,7 @@ module.exports = (robot) ->
       msg.send [memory.lastRecall.word, memory.lastRecall.action, memory.lastRecall.term].join(' ')
 
   robot.respond /who (told|taught) you( that)?\??$/i, (msg) ->
+    loadMemory()
     last = memory.lastRecall || {}
     if not last.user
       msg.send 'told me what?'
@@ -67,6 +72,7 @@ module.exports = (robot) ->
       msg.send last.user
 
   robot.respond /who (told|taught) you( that)? @?(\w+) (is|are) (.*)\??/i, (msg) ->
+    loadMemory()
     action = msg.match[4].trim()
     word = msg.match[3].trim()
     term = msg.match[5].trim()
@@ -87,6 +93,7 @@ module.exports = (robot) ->
         msg.send lookup.user
 
   robot.respond /@?(\w+) (is|are) (.*)/i, (msg) ->
+    loadMemory()
     word = msg.match[1].trim()
     key = inflection.singularize(word)
     action = msg.match[2].trim()
@@ -111,6 +118,7 @@ module.exports = (robot) ->
           msg.send 'thanks for teaching me about ' + word
 
   robot.respond /@?(\w+) (is|are) not (.*)/i, (msg) ->
+    loadMemory()
     word = msg.match[1].trim()
     key = inflection.singularize(word)
     action = msg.match[2].trim()
@@ -132,6 +140,7 @@ module.exports = (robot) ->
           msg.send 'Ok, ' + [word, action, 'not', term].join(' ')
 
   robot.respond /what( words)? do you know\??/i, (msg) ->
+    loadMemory()
     words = (memory.words[m][0].word for m in Object.keys(memory.words) when memory.words[m].length)
     if words.length
       msg.send 'so far I know about ' + words.join(', ')
@@ -139,6 +148,7 @@ module.exports = (robot) ->
       msg.send 'nothing.'
 
   robot.respond /what do you think\??/i, (msg) ->
+    loadMemory()
     if not (Object.keys memory.words).length
       msg.send msg.random doNotKnowResponses
     else
