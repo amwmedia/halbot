@@ -21,8 +21,8 @@
     "url": "https://github.com/amwmedia/halbot.git"
   },
   "dependencies": {
-    "hubot": ">= 2.6.0 < 3.0.0",
-    "hubot-scripts": ">= 2.5.0 < 3.0.0",
+    "hubot": "^2.12.0",
+    "hubot-scripts": "^2.5.16",
     "hubot-slack": "^2.2.0",
     "inflection": "^1.4.2",
     "mongodb": "^1.4.10"
